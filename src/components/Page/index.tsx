@@ -1,31 +1,12 @@
-import { PropsWithChildren } from "react"
-import { useDrop } from 'react-dnd'
-import { useComponentsStore } from '@/store/components'
-import { useComponentsConfigStore } from '@/store/components-configs'
+import { CSSProperties, PropsWithChildren } from "react"
+import { useApplyDrop } from "@/hooks/useApplyDrop"
 
-export const Page = (props: PropsWithChildren<{id: number}>)=> {
-    const { id } = props
-    const { componentsMap } = useComponentsConfigStore()
-    const { addComponent } = useComponentsStore()
-    // 支持放置组件
-    const [collect, drop] = useDrop(()=>({
-        accept: ['container', 'button'],
-        drop: (item, monitor)=> {
-            if(monitor.didDrop()){
-                return 
-            }
-            console.log('item, monitor: ', item, monitor);
-            // 添加组件到store中
-
-            // 当前组件的id
-
-            const component = componentsMap[item.type];
-            addComponent(component, id)
-        }
-    }))
+export const Page = (props: PropsWithChildren<{ id: number, styles: CSSProperties }>) => {
+    const { id, styles, ...resetProps } = props
+    const { ref } = useApplyDrop({ accept: ['button', 'container', 'modal'], id })
 
     return (
-        <div className="page w-full h-full" ref={drop}>{props?.children}</div>
+        <div {...resetProps} style={styles} data-component-id={id} className="page w-full h-full" ref={ref}>{props?.children}</div>
     )
 }
 

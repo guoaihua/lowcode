@@ -1,26 +1,78 @@
-import { useComponentsStore } from '@/sotre/components'
+import { useComponentsStore } from '@/store/components'
 import { useComponentsConfigStore } from "@/store/components-configs";
-import { keys  } from "lodash-es";
-import React, { useMemo } from 'react';
+import { keys } from "lodash-es";
+import React, { useMemo, useState } from 'react';
 import MaterialItem from "./materialItem";
+import { Segmented } from 'antd';
+import { AppstoreOutlined, PartitionOutlined, CodeOutlined } from '@ant-design/icons';
+import { OutlineTree } from './OutlineTree'
+import { SourceCode } from './SourceCode'
 
-const Materials = ()=> {
+enum MaterialsEnum {
+    COMPONENT,
+    OUTLINE,
+    SOURCE_CODE
+}
+
+
+const MATERIALS_OPTION = [
+    {
+        label: <AppstoreOutlined />,
+        value: MaterialsEnum.COMPONENT
+    },
+    {
+        label: <PartitionOutlined />,
+        value: MaterialsEnum.OUTLINE
+    },
+    {
+        label: <CodeOutlined />,
+        value: MaterialsEnum.SOURCE_CODE
+    }
+]
+
+
+const Materials = () => {
+    const [materialOpt, setMaterialOpt] = useState(MaterialsEnum.COMPONENT)
     const { componentsMap } = useComponentsConfigStore()
-
     const materials = useMemo(() => {
-        return keys(componentsMap)
+        return keys(componentsMap)?.filter(v => v !== 'page')
     }, [componentsMap])
 
     console.log('materials: ', materials);
 
     return (
-        <div className='flex gap-2 flex-wrap mt-2.5'>
-            {
-                materials?.map((key)=> {
-                    const component = componentsMap[key]
-                    return <MaterialItem component={component}/>
-                })
-            }
+        <div className='flex h-full gap-1'>
+            <div className='h-full border-r border-r-blue-200 w-[43px]'>
+                <Segmented size='large' vertical value={materialOpt} onChange={setMaterialOpt} options={MATERIALS_OPTION} />
+            </div>
+            <div className='h-full w-[calc(100%-43px)]'>
+                {
+                    materialOpt === MaterialsEnum.COMPONENT && (
+                        <>
+                            <h3 className=' mb-2.5'>组件</h3>
+                            <div className='flex flex-wrap gap-1'>
+                                {
+                                    materials?.map((key) => {
+                                        const component = componentsMap[key]
+                                        return <MaterialItem component={component} />
+                                    })
+                                }
+                            </div>
+                        </>
+                    )
+                }
+                {
+                    materialOpt === MaterialsEnum.OUTLINE && (
+                        <OutlineTree />
+                    )
+                }
+                {
+                    materialOpt === MaterialsEnum.SOURCE_CODE && (
+                        <SourceCode />
+                    )
+                }
+
+            </div>
         </div>
     )
 }
