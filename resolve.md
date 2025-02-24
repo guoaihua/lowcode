@@ -19,4 +19,8 @@ https://react-dnd.github.io/react-dnd/about
 4、随机数生成使用nanoid
 https://github.com/ai/nanoid/blob/HEAD/README.zh-CN.md
 
-5、
+5、allotment 分割界面
+
+6、monaco-editor/react 展示代码编辑器
+
+7、
